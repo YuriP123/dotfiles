@@ -22,7 +22,13 @@ Configs for my enviornment
 - wget: Internet file retriever
 
 ## Nvim plugins
-~/.local/share/nvim/lazy/which-key.nvim/plugin/which-key.vim
-~/.local/share/nvim/lazy/nvim-treesitter/plugin/nvim-treesitter.lua
-~/.local/share/nvim/lazy/dashboard-nvim/plugin/dashboard.lua
-/opt/homebrew/Cellar/neovim/0.9.4/share/nvim/runtime/plugin/nvim.lua
+- bufferline
+- conform
+- copilot
+- gitsigns
+- mason-lspconfig
+- nvim-lint
+- nvim-lspconfig
+- nvim-treesitter
+- nvim-web-devicons
+- telescope
