@@ -1,5 +1,5 @@
 # dotfiles
-Configs for my enviornment
+Configs for my nvim enviornment :)
 
 ### Theme: solarized-osaka
 
