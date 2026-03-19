@@ -1,0 +1,13 @@
+# OS
+.DS_Store
+
+# Neovim swap/backup
+*.swp
+*.swo
+*~
+
+# Lazy / plugins (just in case)
+lazy-lock.json
+
+# Logs
+*.log
