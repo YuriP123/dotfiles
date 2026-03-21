@@ -31,10 +31,13 @@ keymap.set("n", "sk", "<C-w>k")
 keymap.set("n", "sj", "<C-w>j")
 keymap.set("n", "sl", "<C-w>l")
 
---diagnostics
-keymap.set("n", "C-j", function()
-  vim.diagnostic.goto_next()
-end, opts)
-
 --live_grep
 keymap.set("n", "<leader>flg", ":Telescope live_grep<Return>", opts)
+--
+--molten
+vim.keymap.set("n", "<leader>mi", "<Cmd>MoltenInit python3<CR>", { desc = "Init kernel" })
+vim.keymap.set("n", "<leader>ml", "<Cmd>MoltenEvaluateLine<CR>", { desc = "Run line" })
+vim.keymap.set("v", "<leader>me", "<Esc><Cmd>MoltenEvaluateVisual<CR>", { desc = "Run selection" })
+vim.keymap.set("n", "<leader>mr", "<Cmd>MoltenRestart!<CR>", { desc = "Restart kernel" })
+vim.keymap.set("n", "<leader>md", "<Cmd>MoltenDelete<CR>", { desc = "Delete cell" })
+vim.keymap.set("n", "<leader>mo", "<Cmd>MoltenShowOutput<CR>", { desc = "Show output" })

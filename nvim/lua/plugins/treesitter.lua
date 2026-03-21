@@ -22,12 +22,7 @@ return {
       indent = { enable = true },
     },
     config = function(_, opts)
-      local ok, configs = pcall(require, "nvim-treesitter.configs")
-      if not ok then
-        vim.notify("nvim-treesitter.configs not found", vim.log.levels.ERROR)
-        return
-      end
-      configs.setup(opts)
+      require("nvim-treesitter").setup(opts)
     end,
   },
 }
