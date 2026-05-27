@@ -31,9 +31,6 @@ keymap.set("n", "sk", "<C-w>k")
 keymap.set("n", "sj", "<C-w>j")
 keymap.set("n", "sl", "<C-w>l")
 
---live_grep
-keymap.set("n", "<leader>flg", ":Telescope live_grep<Return>", opts)
---
 --molten
 vim.keymap.set("n", "<leader>mi", "<Cmd>MoltenInit python3<CR>", { desc = "Init kernel" })
 vim.keymap.set("n", "<leader>ml", "<Cmd>MoltenEvaluateLine<CR>", { desc = "Run line" })
