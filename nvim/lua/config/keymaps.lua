@@ -31,10 +31,218 @@ keymap.set("n", "sk", "<C-w>k")
 keymap.set("n", "sj", "<C-w>j")
 keymap.set("n", "sl", "<C-w>l")
 
---molten
-vim.keymap.set("n", "<leader>mi", "<Cmd>MoltenInit python3<CR>", { desc = "Init kernel" })
-vim.keymap.set("n", "<leader>ml", "<Cmd>MoltenEvaluateLine<CR>", { desc = "Run line" })
-vim.keymap.set("v", "<leader>me", "<Esc><Cmd>MoltenEvaluateVisual<CR>", { desc = "Run selection" })
-vim.keymap.set("n", "<leader>mr", "<Cmd>MoltenRestart!<CR>", { desc = "Restart kernel" })
-vim.keymap.set("n", "<leader>md", "<Cmd>MoltenDelete<CR>", { desc = "Delete cell" })
-vim.keymap.set("n", "<leader>mo", "<Cmd>MoltenShowOutput<CR>", { desc = "Show output" })
+-- =========================================================
+-- Molten
+-- =========================================================
+
+vim.g.molten_output_is_open = false
+vim.g.molten_output_pinned = false
+
+local function hide_molten_output()
+  vim.g.molten_output_is_open = false
+
+  if vim.fn.exists(":MoltenHideOutput") == 2 then
+    pcall(vim.cmd, "MoltenHideOutput")
+  end
+end
+
+local function show_molten_output()
+  if vim.fn.exists(":MoltenShowOutput") == 2 then
+    pcall(vim.cmd, "MoltenShowOutput")
+    vim.g.molten_output_is_open = true
+  end
+end
+
+local function hide_molten_output_if_not_pinned()
+  if not vim.g.molten_output_pinned then
+    hide_molten_output()
+  end
+end
+
+-- Init Python kernel
+vim.keymap.set("n", "<leader>mi", "<Cmd>MoltenInit python3<CR>", {
+  desc = "Molten init Python kernel",
+  silent = true,
+})
+
+-- Run current line
+vim.keymap.set("n", "<leader>ml", function()
+  vim.cmd("MoltenEvaluateLine")
+
+  vim.defer_fn(function()
+    hide_molten_output_if_not_pinned()
+  end, 150)
+end, {
+  desc = "Molten run line",
+  silent = true,
+})
+
+-- Run visual selection
+vim.keymap.set("v", "<leader>me", ":<C-u>MoltenEvaluateVisual<CR>gv", {
+  desc = "Molten run selection",
+  silent = true,
+})
+
+-- Rerun current Molten cell
+vim.keymap.set("n", "<leader>mr", function()
+  vim.cmd("MoltenReevaluateCell")
+
+  vim.defer_fn(function()
+    hide_molten_output_if_not_pinned()
+  end, 150)
+end, {
+  desc = "Molten rerun cell",
+  silent = true,
+})
+
+-- Restart kernel
+vim.keymap.set("n", "<leader>mR", "<Cmd>MoltenRestart!<CR>", {
+  desc = "Molten restart kernel",
+  silent = true,
+})
+
+-- Delete current cell output
+vim.keymap.set("n", "<leader>md", "<Cmd>MoltenDelete<CR>", {
+  desc = "Molten delete cell",
+  silent = true,
+})
+
+-- Delete all cell outputs
+vim.keymap.set("n", "<leader>mD", "<Cmd>MoltenDelete!<CR>", {
+  desc = "Molten delete all cells",
+  silent = true,
+})
+
+-- Show output temporarily
+vim.keymap.set("n", "<leader>mo", function()
+  vim.g.molten_output_pinned = false
+  show_molten_output()
+end, {
+  desc = "Molten show output",
+  silent = true,
+})
+
+-- Hide output manually
+vim.keymap.set("n", "<leader>mh", function()
+  vim.g.molten_output_pinned = false
+  hide_molten_output()
+end, {
+  desc = "Molten hide output",
+  silent = true,
+})
+
+-- Toggle pinned output
+vim.keymap.set("n", "<leader>mt", function()
+  if vim.g.molten_output_pinned then
+    vim.g.molten_output_pinned = false
+    hide_molten_output()
+    vim.notify("Molten output unpinned")
+  else
+    vim.g.molten_output_pinned = true
+    show_molten_output()
+    vim.notify("Molten output pinned")
+  end
+end, {
+  desc = "Molten toggle pinned output",
+  silent = true,
+})
+
+-- Run current # %% cell
+local function molten_run_current_cell()
+  local current_line = vim.fn.line(".")
+  local total_lines = vim.fn.line("$")
+
+  local start_line = 1
+  local end_line = total_lines
+
+  -- Find previous # %% marker
+  for line = current_line, 1, -1 do
+    local text = vim.fn.getline(line)
+
+    if text:match("^%s*#%s*%%%%") then
+      start_line = line + 1
+      break
+    end
+  end
+
+  -- Find next # %% marker
+  for line = current_line + 1, total_lines do
+    local text = vim.fn.getline(line)
+
+    if text:match("^%s*#%s*%%%%") then
+      end_line = line - 1
+      break
+    end
+  end
+
+  if start_line > end_line then
+    vim.notify("No code found in this cell", vim.log.levels.WARN)
+    return
+  end
+
+  vim.fn.MoltenEvaluateRange(start_line, end_line)
+
+  -- Hide output after running unless pinned
+  vim.defer_fn(function()
+    hide_molten_output_if_not_pinned()
+  end, 200)
+end
+
+vim.keymap.set("n", "<leader>mc", molten_run_current_cell, {
+  desc = "Molten run current cell",
+  silent = true,
+})
+
+-- Run all # %% cells
+local function molten_run_all_cells()
+  local total_lines = vim.fn.line("$")
+  local ranges = {}
+  local start_line = 1
+
+  for line = 1, total_lines do
+    local text = vim.fn.getline(line)
+
+    if text:match("^%s*#%s*%%%%") then
+      if line > start_line then
+        table.insert(ranges, { start_line, line - 1 })
+      end
+
+      start_line = line + 1
+    end
+  end
+
+  if start_line <= total_lines then
+    table.insert(ranges, { start_line, total_lines })
+  end
+
+  for _, range in ipairs(ranges) do
+    local first = range[1]
+    local last = range[2]
+
+    if first <= last then
+      vim.fn.MoltenEvaluateRange(first, last)
+    end
+  end
+
+  -- Hide output after running all unless pinned
+  vim.defer_fn(function()
+    hide_molten_output_if_not_pinned()
+  end, 500)
+end
+
+vim.keymap.set("n", "<leader>ma", molten_run_all_cells, {
+  desc = "Molten run all cells",
+  silent = true,
+})
+
+-- Automatically hide output when moving unless pinned
+local molten_hide_group = vim.api.nvim_create_augroup("MoltenAutoHideOutput", {
+  clear = true,
+})
+
+vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "WinScrolled" }, {
+  group = molten_hide_group,
+  callback = function()
+    hide_molten_output_if_not_pinned()
+  end,
+})
