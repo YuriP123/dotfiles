@@ -246,3 +246,25 @@ vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "WinScrolled" }, {
     hide_molten_output_if_not_pinned()
   end,
 })
+
+vim.keymap.set("n", "<localleader>os", ":noautocmd MoltenEnterOutput<CR>", {
+  desc = "Enter Molten output",
+  silent = true,
+})
+
+vim.keymap.set("n", "<localleader>oh", ":MoltenHideOutput<CR>", {
+  desc = "Hide Molten output",
+  silent = true,
+})
+
+-- Create new Python notebook cell below
+vim.keymap.set("n", "<leader>nc", "o# %%<Esc>o", {
+  desc = "New notebook cell below",
+  silent = true,
+})
+
+-- Create new Python notebook cell above
+vim.keymap.set("n", "<leader>nC", "O# %%<Esc>O", {
+  desc = "New notebook cell above",
+  silent = true,
+})

@@ -8,21 +8,43 @@ return {
       "3rd/image.nvim",
     },
     init = function()
-      vim.g.molten_image_provider = "image.nvim"
+      -- Important: use a border TABLE, not "rounded",
+      -- to avoid Molten's border/footer indexing crash.
+      vim.g.molten_output_win_border = {
+        { "╭", "MoltenOutputBorder" },
+        { "─", "MoltenOutputBorder" },
+        { "╮", "MoltenOutputBorder" },
+        { "│", "MoltenOutputBorder" },
+        { "╯", "MoltenOutputBorder" },
+        { "─", "MoltenOutputBorder" },
+        { "╰", "MoltenOutputBorder" },
+        { "│", "MoltenOutputBorder" },
+      }
 
+      -- Image/plot rendering
+      vim.g.molten_image_provider = "image.nvim"
+      vim.g.molten_image_location = "float"
+
+      -- Notebook-style behavior
       vim.g.molten_auto_open_output = true
       vim.g.molten_virt_text_output = false
+      vim.g.molten_output_virt_lines = true
+      vim.g.molten_cover_empty_lines = true
 
-      vim.g.molten_image_location = "float"
-      vim.g.molten_output_win_max_height = 30
+      -- Long output behavior
+      vim.g.molten_output_win_max_height = 25
       vim.g.molten_output_win_max_width = 120
       vim.g.molten_wrap_output = true
+      vim.g.molten_output_show_more = true
+      vim.g.molten_floating_window_focus = "bottom"
 
-      -- Keep this while testing
-      vim.g.molten_show_mimetype_debug = true
+      -- Raise this if you print very large outputs.
+      -- Molten's default is already 1,000,000 chars, but this gives more room.
+      vim.g.molten_limit_output_chars = 10000000
 
-      -- Avoid border/footer bugs for now
-      vim.g.molten_output_show_more = false
+      -- UI/debug
+      vim.g.molten_output_win_style = "minimal"
+      vim.g.molten_show_mimetype_debug = false
     end,
   },
 
