@@ -268,3 +268,6 @@ vim.keymap.set("n", "<leader>nC", "O# %%<Esc>O", {
   desc = "New notebook cell above",
   silent = true,
 })
+
+-- clear tag stack
+vim.keymap.set("n", "<leader>tc", "<cmd>delmarks!<CR>", { desc = "Delete all marks" })
