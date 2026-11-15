@@ -56,8 +56,8 @@ return {
 
       integrations = {},
 
-      max_width = 160,
-      max_height = 35,
+      max_width = 120,
+      max_height = 20,
       max_height_window_percentage = math.huge,
       max_width_window_percentage = math.huge,
 

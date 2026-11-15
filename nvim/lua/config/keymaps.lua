@@ -17,9 +17,13 @@ keymap.set("n", "dw", "vb_d")
 keymap.set("n", "<C-a>", "gg<S-v>G")
 
 --new tab
-keymap.set("n", "te", "tabedit", opts)
+keymap.set("n", "te", "<cmd>tabnew<cr>", { desc = "New tab" })
 keymap.set("n", "<tab>", ":tabnext<Return>", opts)
 keymap.set("n", "<s-tab>", ":tabprev<Return>", opts)
+
+-- Tab occupies Ctrl-i in many terminals; keep both jumplist directions usable.
+keymap.set("n", "[j", "<C-o>", { desc = "Jump back" })
+keymap.set("n", "]j", "<C-i>", { desc = "Jump forward" })
 
 --split window
 keymap.set("n", "ss", ":split<Return>", opts)
@@ -111,6 +115,16 @@ vim.keymap.set("n", "<leader>md", "<Cmd>MoltenDelete<CR>", {
 vim.keymap.set("n", "<leader>mD", "<Cmd>MoltenDelete!<CR>", {
   desc = "Molten delete all cells",
   silent = true,
+})
+
+-- Change kernel
+vim.keymap.set("n", "<leader>mk", function()
+  pcall(vim.cmd, "MoltenDeinit")
+  vim.schedule(function()
+    vim.cmd("MoltenInit")
+  end)
+end, {
+  desc = "Molten: Repick Kernel",
 })
 
 -- Show output temporarily
@@ -271,3 +285,32 @@ vim.keymap.set("n", "<leader>nC", "O# %%<Esc>O", {
 
 -- clear tag stack
 vim.keymap.set("n", "<leader>tc", "<cmd>delmarks!<CR>", { desc = "Delete all marks" })
+
+vim.keymap.set("n", "<leader>ci", function()
+  vim.cmd("botright 15split")
+  vim.fn.termopen({
+    "codex",
+    "--sandbox",
+    "read-only",
+    "--ask-for-approval",
+    "never",
+  })
+  vim.cmd("startinsert")
+end, { desc = "Open Codex" })
+
+-- Copy references for the Codex session running in a separate tmux pane.
+keymap.set("n", "<leader>ay", function()
+  require("yuri.agent_context").copy_path(false)
+end, { desc = "Copy repo-relative file path" })
+
+keymap.set("n", "<leader>aY", function()
+  require("yuri.agent_context").copy_path(true)
+end, { desc = "Copy absolute file path" })
+
+keymap.set("n", "<leader>al", function()
+  require("yuri.agent_context").copy_reference(false)
+end, { desc = "Copy file:line for agent" })
+
+keymap.set("x", "<leader>al", function()
+  require("yuri.agent_context").copy_reference(true)
+end, { desc = "Copy file:line-range for agent" })

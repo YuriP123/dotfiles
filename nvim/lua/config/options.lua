@@ -8,3 +8,9 @@ vim.cmd([[let &t_Ce = "\e[4:0m"]])
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = ","
+
+-- Use one picker and one project root for files, grep, and the explorer.
+vim.g.lazyvim_picker = "telescope"
+vim.g.root_spec = { ".git", { "package.json", "pyproject.toml", "Cargo.toml", "go.mod", "Makefile" }, "lsp", "cwd" }
+-- Put Copilot in Blink's completion menu, without inline ghost text.
+vim.g.ai_cmp = true

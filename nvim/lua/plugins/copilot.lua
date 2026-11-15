@@ -1,18 +1,14 @@
 return {
-  "zbirenbaum/copilot-cmp",
-  "github/copilot.vim",
-  "zbirenbaum/copilot.lua",
-  cmd = "Copilot",
-  event = "InsertEnter",
-  opts = {
-    suggestion = { enabled = false },
-    panel = { enabled = false },
-    filetypes = {
-      markdown = true,
-      help = true,
+  -- LazyVim's Copilot extra feeds Blink's completion menu. Disable the legacy
+  -- Vimscript and nvim-cmp adapters so only one Copilot client is active.
+  { "github/copilot.vim", enabled = false },
+  { "zbirenbaum/copilot-cmp", enabled = false },
+  {
+    "saghen/blink.cmp",
+    opts = {
+      completion = {
+        ghost_text = { enabled = false },
+      },
     },
   },
-  config = function()
-    require("copilot").setup({})
-  end,
 }
